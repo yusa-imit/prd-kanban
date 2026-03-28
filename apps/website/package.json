@@ -9,7 +9,8 @@
     "preview": "vp preview",
     "typegen": "react-router typegen",
     "test": "vp test",
-    "test:e2e": "vp exec playwright test"
+    "test:e2e": "vp exec playwright test",
+    "test:e2e:watch": "vp exec playwright test --ui"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^1.7.9",

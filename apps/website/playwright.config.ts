@@ -1,7 +1,7 @@
 import { defineConfig } from "@playwright/test";
 
 export default defineConfig({
-  testDir: "./tests/e2e",
+  testDir: "./app/features/kanban/scenario-tests",
   webServer: {
     command: "vp dev",
     port: 5173,
