@@ -10,13 +10,17 @@
     "typegen": "react-router typegen"
   },
   "dependencies": {
+    "@atlaskit/pragmatic-drag-and-drop": "^1.7.9",
+    "@atlaskit/pragmatic-drag-and-drop-hitbox": "^1.1.0",
     "@react-router/node": "^7.13.2",
     "@tailwindcss/vite": "^4.2.2",
     "isbot": "^5.1.36",
+    "lucide-react": "^1.7.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-router": "^7.13.2",
     "tailwindcss": "^4.2.2",
+    "tiny-invariant": "^1.3.3",
     "ui": "workspace:*"
   },
   "devDependencies": {
