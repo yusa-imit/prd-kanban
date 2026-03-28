@@ -102,7 +102,7 @@ export function CandidateDropdownMenu({ candidate }: { candidate: Candidate }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon">
+        <Button variant="ghost" size="icon-sm">
           <MoreHorizontal />
           <span className="sr-only">더보기</span>
         </Button>

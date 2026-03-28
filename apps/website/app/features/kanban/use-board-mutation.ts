@@ -1,16 +1,15 @@
 import { useCallback, useRef } from "react";
-import type { BoardState } from "~/types/kanban";
 
-interface MutationOptions<TVariables> {
-  mutate: (state: BoardState, variables: TVariables) => BoardState;
+interface MutationOptions<TState, TVariables> {
+  mutate: (state: TState, variables: TVariables) => TState;
   apiFn?: (variables: TVariables) => Promise<void>;
-  onRollback?: (snapshot: BoardState) => void;
+  onRollback?: (snapshot: TState) => void;
 }
 
-export function useBoardMutation<TVariables>(
-  getBoardState: () => BoardState,
-  setBoardState: (state: BoardState) => void,
-  options: MutationOptions<TVariables>,
+export function useBoardMutation<TState, TVariables>(
+  getBoardState: () => TState,
+  setBoardState: (state: TState) => void,
+  options: MutationOptions<TState, TVariables>,
 ) {
   const optionsRef = useRef(options);
   optionsRef.current = options;

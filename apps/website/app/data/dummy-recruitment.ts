@@ -1,4 +1,13 @@
-import type { BoardState, Candidate, CandidateId, Stage, StageId } from "~/types/kanban";
+import type {
+  ActionId,
+  BoardState,
+  Candidate,
+  CandidateId,
+  Stage,
+  StageAction,
+  StageDetailState,
+  StageId,
+} from "~/types/kanban";
 
 const STAGE_NAMES = [
   "서류심사",
@@ -94,6 +103,80 @@ const EXPERIENCE_TAGS = [
 
 const CANDIDATES_PER_STAGE = 1000;
 
+export const STAGE_ACTIONS: Record<StageId, StageAction[]> = {
+  "stage-1": [
+    { id: "act-1-1", name: "접수완료", order: 0 },
+    { id: "act-1-2", name: "서류검토중", order: 1 },
+    { id: "act-1-3", name: "서류합격", order: 2 },
+    { id: "act-1-4", name: "결과통보", order: 3 },
+  ],
+  "stage-2": [
+    { id: "act-2-1", name: "시험발송", order: 0 },
+    { id: "act-2-2", name: "시험진행중", order: 1 },
+    { id: "act-2-3", name: "채점중", order: 2 },
+    { id: "act-2-4", name: "채점완료", order: 3 },
+  ],
+  "stage-3": [
+    { id: "act-3-1", name: "일정조율", order: 0 },
+    { id: "act-3-2", name: "면접대기", order: 1 },
+    { id: "act-3-3", name: "면접완료", order: 2 },
+    { id: "act-3-4", name: "평가중", order: 3 },
+    { id: "act-3-5", name: "결과확정", order: 4 },
+  ],
+  "stage-4": [
+    { id: "act-4-1", name: "과제발송", order: 0 },
+    { id: "act-4-2", name: "과제진행중", order: 1 },
+    { id: "act-4-3", name: "과제제출", order: 2 },
+    { id: "act-4-4", name: "평가중", order: 3 },
+    { id: "act-4-5", name: "평가완료", order: 4 },
+  ],
+  "stage-5": [
+    { id: "act-5-1", name: "일정조율", order: 0 },
+    { id: "act-5-2", name: "면접대기", order: 1 },
+    { id: "act-5-3", name: "면접완료", order: 2 },
+    { id: "act-5-4", name: "평가중", order: 3 },
+  ],
+  "stage-6": [
+    { id: "act-6-1", name: "일정조율", order: 0 },
+    { id: "act-6-2", name: "면접대기", order: 1 },
+    { id: "act-6-3", name: "면접완료", order: 2 },
+    { id: "act-6-4", name: "평가중", order: 3 },
+  ],
+  "stage-7": [
+    { id: "act-7-1", name: "레퍼런스요청", order: 0 },
+    { id: "act-7-2", name: "응답대기", order: 1 },
+    { id: "act-7-3", name: "검토중", order: 2 },
+    { id: "act-7-4", name: "검토완료", order: 3 },
+  ],
+  "stage-8": [
+    { id: "act-8-1", name: "제안준비", order: 0 },
+    { id: "act-8-2", name: "제안발송", order: 1 },
+    { id: "act-8-3", name: "협상중", order: 2 },
+    { id: "act-8-4", name: "합의완료", order: 3 },
+  ],
+  "stage-9": [
+    { id: "act-9-1", name: "안내발송", order: 0 },
+    { id: "act-9-2", name: "검진예약", order: 1 },
+    { id: "act-9-3", name: "검진완료", order: 2 },
+    { id: "act-9-4", name: "결과확인", order: 3 },
+  ],
+  "stage-10": [
+    { id: "act-10-1", name: "합격통보", order: 0 },
+    { id: "act-10-2", name: "서류수령", order: 1 },
+    { id: "act-10-3", name: "입사확정", order: 2 },
+  ],
+  "stage-11": [
+    { id: "act-11-1", name: "입사안내", order: 0 },
+    { id: "act-11-2", name: "장비준비", order: 1 },
+    { id: "act-11-3", name: "입사대기중", order: 2 },
+  ],
+  "stage-12": [
+    { id: "act-12-1", name: "입사완료", order: 0 },
+    { id: "act-12-2", name: "온보딩중", order: 1 },
+    { id: "act-12-3", name: "온보딩완료", order: 2 },
+  ],
+};
+
 export function generateBoardState(): BoardState {
   const stageOrder: StageId[] = [];
   const stages: Record<StageId, Stage> = {};
@@ -131,7 +214,12 @@ export function generateBoardState(): BoardState {
       const month = (Math.floor(globalIndex / 28) % 12) + 1;
       const appliedAt = `2025-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 
-      candidates[candidateId] = { id: candidateId, name, tags, appliedAt };
+      const stageActions = STAGE_ACTIONS[stageId];
+      const currentActionId = stageActions
+        ? stageActions[globalIndex % stageActions.length].id
+        : undefined;
+
+      candidates[candidateId] = { id: candidateId, name, tags, appliedAt, currentActionId };
       stageCandidates[stageId].push(candidateId);
     }
   }
@@ -151,3 +239,43 @@ export function generateBoardState(): BoardState {
 }
 
 export const dummyBoardState: BoardState = generateBoardState();
+
+export function generateStageDetailState(
+  stageId: StageId,
+  boardState: BoardState,
+): StageDetailState {
+  const stage = boardState.stages[stageId];
+  const stageActions = STAGE_ACTIONS[stageId] ?? [];
+  const candidateIdsInStage = boardState.stageCandidates[stageId] ?? [];
+
+  const actionOrder: ActionId[] = stageActions.map((a) => a.id);
+  const actions: Record<ActionId, StageAction> = {};
+  const actionCandidates: Record<ActionId, CandidateId[]> = {};
+
+  for (const action of stageActions) {
+    actions[action.id] = action;
+    actionCandidates[action.id] = [];
+  }
+
+  const candidates: Record<CandidateId, Candidate> = {};
+
+  for (const candidateId of candidateIdsInStage) {
+    const candidate = boardState.candidates[candidateId];
+    candidates[candidateId] = candidate;
+    const actionId = candidate.currentActionId;
+    if (actionId && actionCandidates[actionId]) {
+      actionCandidates[actionId].push(candidateId);
+    } else if (actionOrder.length > 0) {
+      actionCandidates[actionOrder[0]].push(candidateId);
+    }
+  }
+
+  return {
+    stageId,
+    stageName: stage?.name ?? stageId,
+    actionOrder,
+    actions,
+    actionCandidates,
+    candidates,
+  };
+}

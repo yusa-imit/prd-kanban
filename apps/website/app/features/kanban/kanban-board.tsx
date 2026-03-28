@@ -35,6 +35,7 @@ export function KanbanBoard({ initialState }: { initialState: BoardState }) {
               name={stage.name}
               candidateIds={candidateIds}
               candidates={boardState.candidates}
+              linkStageId={stageId}
             />
           );
         })}
