@@ -21,5 +21,5 @@
       "~/*": ["./app/*"]
     }
   },
-  "include": [".react-router/types/**/*", "app/**/*", "app/**/*.ts", "app/**/*.tsx"]
+  "include": [".react-router/types/**/*", "app/**/*", "app/**/*.ts", "app/**/*.tsx", "tests/**/*"]
 }

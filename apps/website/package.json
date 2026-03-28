@@ -7,7 +7,9 @@
     "dev": "vp dev",
     "build": "vp build",
     "preview": "vp preview",
-    "typegen": "react-router typegen"
+    "typegen": "react-router typegen",
+    "test": "vp test",
+    "test:e2e": "vp exec playwright test"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^1.7.9",
@@ -27,10 +29,12 @@
     "zustand": "^5.0.12"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "@react-router/dev": "^7.13.2",
     "@types/node": "^22.0.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "happy-dom": "^20.8.9",
     "typescript": "~5.9.3",
     "vite": "npm:@voidzero-dev/vite-plus-core@latest",
     "vite-plus": "latest"

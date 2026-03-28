@@ -7,4 +7,9 @@ export default defineConfig({
   resolve: {
     tsconfigPaths: true,
   },
+  test: {
+    environment: "happy-dom",
+    include: ["tests/**/*.test.{ts,tsx}"],
+    exclude: ["tests/e2e/**"],
+  },
 });
