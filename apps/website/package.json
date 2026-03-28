@@ -5,10 +5,25 @@
   "type": "module",
   "scripts": {
     "dev": "vp dev",
-    "build": "tsc && vp build",
-    "preview": "vp preview"
+    "build": "vp build",
+    "preview": "vp preview",
+    "typegen": "react-router typegen"
+  },
+  "dependencies": {
+    "@react-router/node": "^7.13.2",
+    "@tailwindcss/vite": "^4.2.2",
+    "isbot": "^5.1.36",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-router": "^7.13.2",
+    "tailwindcss": "^4.2.2",
+    "ui": "workspace:*"
   },
   "devDependencies": {
+    "@react-router/dev": "^7.13.2",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
     "typescript": "~5.9.3",
     "vite": "npm:@voidzero-dev/vite-plus-core@latest",
     "vite-plus": "latest"
