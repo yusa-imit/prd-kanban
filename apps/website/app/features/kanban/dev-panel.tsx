@@ -10,6 +10,8 @@ const eventBadgeVariant: Record<KanbanLogEventType, string> = {
   CARD_MOVE: "bg-green-100 text-green-800",
   DROP_ON_EMPTY: "bg-green-100 text-green-800",
   MENU_ACTION: "bg-purple-100 text-purple-800",
+  BULK_MOVE: "bg-orange-100 text-orange-800",
+  BULK_DROP_ON_EMPTY: "bg-orange-100 text-orange-800",
 };
 
 function formatTime(timestamp: number) {
@@ -22,7 +24,7 @@ export function DevPanel() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 border-t bg-background shadow-lg">
+    <div className="border-t bg-background">
       <button
         type="button"
         onClick={() => setOpen(!open)}

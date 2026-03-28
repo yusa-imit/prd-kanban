@@ -2,10 +2,10 @@ import type { BoardState } from "~/types/kanban";
 import { KanbanBoardHeader } from "./kanban-board-header";
 import { KanbanColumn } from "./kanban-column";
 import { useKanbanBoard } from "./use-kanban-board";
-import { KanbanLogContext, useKanbanLogReducer } from "./use-kanban-log";
 import { DevPanel } from "./dev-panel";
+import { BulkActionToolbar } from "./bulk-action-toolbar";
 
-function KanbanBoardInner({ initialState }: { initialState: BoardState }) {
+export function KanbanBoard({ initialState }: { initialState: BoardState }) {
   const boardState = useKanbanBoard(initialState);
 
   return (
@@ -26,17 +26,10 @@ function KanbanBoardInner({ initialState }: { initialState: BoardState }) {
           );
         })}
       </div>
-      <DevPanel />
+      <div className="fixed inset-x-0 bottom-0 z-50 shadow-lg">
+        <BulkActionToolbar />
+        <DevPanel />
+      </div>
     </div>
-  );
-}
-
-export function KanbanBoard({ initialState }: { initialState: BoardState }) {
-  const logValue = useKanbanLogReducer();
-
-  return (
-    <KanbanLogContext value={logValue}>
-      <KanbanBoardInner initialState={initialState} />
-    </KanbanLogContext>
   );
 }

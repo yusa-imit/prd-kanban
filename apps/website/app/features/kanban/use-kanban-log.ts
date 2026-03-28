@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useReducer } from "react";
+import { create } from "zustand";
 
 export type KanbanLogEventType =
   | "DRAG_START"
@@ -6,7 +6,9 @@ export type KanbanLogEventType =
   | "CARD_REORDER"
   | "CARD_MOVE"
   | "DROP_ON_EMPTY"
-  | "MENU_ACTION";
+  | "MENU_ACTION"
+  | "BULK_MOVE"
+  | "BULK_DROP_ON_EMPTY";
 
 export interface KanbanLogEntry {
   id: string;
@@ -18,55 +20,27 @@ export interface KanbanLogEntry {
 
 interface KanbanLogState {
   entries: KanbanLogEntry[];
-}
-
-type KanbanLogAction = { type: "ADD"; entry: KanbanLogEntry } | { type: "CLEAR" };
-
-function logReducer(state: KanbanLogState, action: KanbanLogAction): KanbanLogState {
-  switch (action.type) {
-    case "ADD":
-      return { entries: [action.entry, ...state.entries] };
-    case "CLEAR":
-      return { entries: [] };
-  }
-}
-
-let logIdCounter = 0;
-
-interface KanbanLogContextValue {
-  entries: KanbanLogEntry[];
   log: (type: KanbanLogEventType, message: string, data?: Record<string, unknown>) => void;
   clear: () => void;
 }
 
-export const KanbanLogContext = createContext<KanbanLogContextValue | null>(null);
+let logIdCounter = 0;
 
-export function useKanbanLogReducer() {
-  const [state, dispatch] = useReducer(logReducer, { entries: [] });
-
-  const log = useCallback(
-    (type: KanbanLogEventType, message: string, data: Record<string, unknown> = {}) => {
-      dispatch({
-        type: "ADD",
-        entry: {
-          id: String(++logIdCounter),
-          type,
-          timestamp: Date.now(),
-          data,
-          message,
-        },
-      });
-    },
-    [],
-  );
-
-  const clear = useCallback(() => dispatch({ type: "CLEAR" }), []);
-
-  return { entries: state.entries, log, clear };
-}
+export const useKanbanLogStore = create<KanbanLogState>((set) => ({
+  entries: [],
+  log: (type, message, data = {}) => {
+    const entry: KanbanLogEntry = {
+      id: String(++logIdCounter),
+      type,
+      timestamp: Date.now(),
+      data,
+      message,
+    };
+    set((state) => ({ entries: [entry, ...state.entries] }));
+  },
+  clear: () => set({ entries: [] }),
+}));
 
 export function useKanbanLog() {
-  const ctx = useContext(KanbanLogContext);
-  if (!ctx) throw new Error("useKanbanLog must be used within KanbanLogProvider");
-  return ctx;
+  return useKanbanLogStore();
 }

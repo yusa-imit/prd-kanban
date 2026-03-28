@@ -46,3 +46,6 @@ export { ScrollArea, ScrollBar } from "./components/ui/scroll-area.tsx";
 
 // Separator
 export { Separator } from "./components/ui/separator.tsx";
+
+// Checkbox
+export { Checkbox } from "./components/ui/checkbox.tsx";
