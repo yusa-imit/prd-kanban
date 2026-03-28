@@ -13,12 +13,20 @@ import {
 } from "ui";
 import { MoreHorizontal, Mail, StickyNote, FileText, UserX } from "lucide-react";
 import type { Candidate } from "~/types/kanban";
+import { useKanbanLog } from "./use-kanban-log";
 
-function handleAction(action: string, candidate: Candidate) {
-  console.log(`[${action}] ${candidate.name} (${candidate.id})`);
+function useHandleAction() {
+  const { log } = useKanbanLog();
+  return (action: string, candidate: Candidate) => {
+    log("MENU_ACTION", `[${action}] ${candidate.name}`, {
+      action,
+      candidateId: candidate.id,
+    });
+  };
 }
 
 function MenuItems({ candidate }: { candidate: Candidate }) {
+  const handleAction = useHandleAction();
   return (
     <>
       <ContextMenuItem onSelect={() => handleAction("메시지 보내기", candidate)}>
@@ -46,6 +54,7 @@ function MenuItems({ candidate }: { candidate: Candidate }) {
 }
 
 function DropdownMenuItems({ candidate }: { candidate: Candidate }) {
+  const handleAction = useHandleAction();
   return (
     <>
       <DropdownMenuItem onSelect={() => handleAction("메시지 보내기", candidate)}>

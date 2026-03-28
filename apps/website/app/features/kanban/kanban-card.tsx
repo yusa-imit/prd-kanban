@@ -14,11 +14,13 @@ import { Card, CardContent, Badge } from "ui";
 import type { Candidate, StageId } from "~/types/kanban";
 import { CandidateContextMenu, CandidateDropdownMenu } from "./candidate-actions";
 import { DropIndicator } from "./drop-indicator";
+import { useKanbanLog } from "./use-kanban-log";
 
 export function KanbanCard({ candidate, stageId }: { candidate: Candidate; stageId: StageId }) {
   const ref = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [closestEdge, setClosestEdge] = useState<Edge | null>(null);
+  const { log } = useKanbanLog();
 
   useEffect(() => {
     const el = ref.current;
@@ -28,8 +30,19 @@ export function KanbanCard({ candidate, stageId }: { candidate: Candidate; stage
       draggable({
         element: el,
         getInitialData: () => ({ type: "card", candidateId: candidate.id, stageId }),
-        onDragStart: () => setIsDragging(true),
-        onDrop: () => setIsDragging(false),
+        onDragStart: () => {
+          setIsDragging(true);
+          log("DRAG_START", `${candidate.name} 드래그 시작 (${stageId})`, {
+            candidateId: candidate.id,
+            sourceStageId: stageId,
+          });
+        },
+        onDrop: () => {
+          setIsDragging(false);
+          log("DRAG_END", `${candidate.name} 드래그 종료`, {
+            candidateId: candidate.id,
+          });
+        },
       }),
       dropTargetForElements({
         element: el,
@@ -46,7 +59,7 @@ export function KanbanCard({ candidate, stageId }: { candidate: Candidate; stage
         onDrop: () => setClosestEdge(null),
       }),
     );
-  }, [candidate.id, stageId]);
+  }, [candidate.id, candidate.name, stageId, log]);
 
   return (
     <div ref={ref} className="relative">

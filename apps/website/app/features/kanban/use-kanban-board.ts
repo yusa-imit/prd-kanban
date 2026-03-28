@@ -4,9 +4,11 @@ import { extractClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/clo
 import { getReorderDestinationIndex } from "@atlaskit/pragmatic-drag-and-drop-hitbox/util/get-reorder-destination-index";
 import { reorder } from "@atlaskit/pragmatic-drag-and-drop/reorder";
 import type { BoardState, CandidateId, StageId } from "~/types/kanban";
+import { useKanbanLog } from "./use-kanban-log";
 
 export function useKanbanBoard(initialState: BoardState) {
   const [boardState, setBoardState] = useState(initialState);
+  const { log } = useKanbanLog();
 
   const moveCard = useCallback(
     (
@@ -77,9 +79,24 @@ export function useKanbanBoard(initialState: BoardState) {
               closestEdgeOfTarget: closestEdge,
               axis: "vertical",
             });
+            log(
+              "CARD_REORDER",
+              `${candidateId} 순서 변경: ${startIndex} → ${destinationIndex} (${destStageId})`,
+              {
+                candidateId,
+                stageId: destStageId,
+                fromIndex: startIndex,
+                toIndex: destinationIndex,
+              },
+            );
             moveCard(candidateId, sourceStageId, destStageId, destinationIndex);
           } else {
             const destinationIndex = closestEdge === "top" ? indexOfTarget : indexOfTarget + 1;
+            log("CARD_MOVE", `${candidateId} 이동: ${sourceStageId} → ${destStageId}`, {
+              candidateId,
+              sourceStageId,
+              destStageId,
+            });
             moveCard(candidateId, sourceStageId, destStageId, destinationIndex);
           }
         } else if (destination.data.type === "column") {
@@ -87,11 +104,16 @@ export function useKanbanBoard(initialState: BoardState) {
           const destStageId = destination.data.stageId as StageId;
           if (sourceStageId === destStageId) return;
           const destLength = boardState.stageCandidates[destStageId].length;
+          log("DROP_ON_EMPTY", `${candidateId} 빈 컬럼에 드롭: ${sourceStageId} → ${destStageId}`, {
+            candidateId,
+            sourceStageId,
+            destStageId,
+          });
           moveCard(candidateId, sourceStageId, destStageId, destLength);
         }
       },
     });
-  }, [boardState, moveCard]);
+  }, [boardState, moveCard, log]);
 
   return boardState;
 }

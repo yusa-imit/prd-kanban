@@ -53,3 +53,60 @@
 - 메뉴 액션(메시지 보내기 등)은 console.log로 처리
 - 전형 컬럼 순서는 고정 (드래그로 컬럼 이동 불가)
 - 반응형 디자인은 스코프 밖 (데스크톱 해상도 기준)
+
+## Iteration 2
+
+### 목표
+
+칸반 보드의 모든 인터랙션(드래그, 드롭, 메뉴 액션)을 시각적으로 확인할 수 있는 개발자용 로그 패널을 추가한다. 기존에 `console.log`로만 출력되던 인터랙션 이벤트를 화면 하단 서랍 패널에 실시간으로 표시한다.
+
+### 기능 명세
+
+1. **이벤트 로그 시스템**
+   - React Context + useReducer로 로그 상태 관리
+   - 로그 이벤트 타입:
+     - `DRAG_START` — 드래그 시작 (candidateId, sourceStageId)
+     - `DRAG_END` — 드래그 종료 (candidateId)
+     - `CARD_REORDER` — 같은 컬럼 내 순서 변경 (candidateId, stageId, fromIndex, toIndex)
+     - `CARD_MOVE` — 다른 컬럼으로 이동 (candidateId, sourceStageId, destStageId)
+     - `DROP_ON_EMPTY` — 빈 컬럼에 드롭 (candidateId, sourceStageId, destStageId)
+     - `MENU_ACTION` — 메뉴 액션 실행 (action, candidateId)
+   - 각 로그 엔트리: `{ id, type, timestamp, data, message }`
+
+2. **하단 서랍 패널**
+   - 화면 하단에 고정된 서랍 패널
+   - 토글 버튼으로 열기/닫기 (기본 닫힘)
+   - 로그 목록을 시간 역순으로 표시 (최신이 위)
+   - 각 로그 엔트리에 타임스탬프, 이벤트 타입 뱃지, 설명 메시지 표시
+   - 로그 초기화(Clear) 버튼
+   - ScrollArea로 스크롤 가능
+
+3. **기존 코드 통합**
+   - `use-kanban-board.ts`의 드래그/드롭 이벤트에 로그 호출 삽입
+   - `kanban-card.tsx`의 드래그 시작/종료에 로그 호출 삽입
+   - `candidate-actions.tsx`의 메뉴 액션에 로그 호출 삽입
+
+### UI/UX 명세
+
+- **패널 위치**: 화면 하단 고정, 칸반 보드 위에 오버레이
+- **토글 버튼**: 패널 상단에 위치, 로그 건수 표시
+- **패널 높이**: 열린 상태에서 300px
+- **로그 엔트리**: 타임스탬프(HH:MM:SS), 이벤트 타입 Badge, 메시지 텍스트
+- **이벤트 타입 뱃지 색상**: 드래그 계열(blue), 이동 계열(green), 메뉴 계열(purple)
+
+### 마일스톤 기준
+
+- [x] 카드 드래그 시작/종료 시 패널에 로그가 표시된다
+- [x] 같은 컬럼 내 순서 변경 시 CARD_REORDER 로그가 표시된다
+- [x] 다른 컬럼으로 이동 시 CARD_MOVE 로그가 표시된다
+- [x] 빈 컬럼에 드롭 시 DROP_ON_EMPTY 로그가 표시된다
+- [x] 메뉴 액션 클릭 시 MENU_ACTION 로그가 표시된다
+- [x] Clear 버튼으로 로그를 초기화할 수 있다
+- [x] 패널 토글 버튼으로 열기/닫기가 동작한다
+- [x] `vp check` 통과
+
+### 제약 사항
+
+- 로그는 클라이언트 메모리에만 저장 (새로고침 시 초기화)
+- 개발용 패널이므로 프로덕션 빌드에서 제거하는 것은 이번 스코프 밖
+- 로그 최대 개수 제한 없음 (메모리 관리는 이후 이터레이션에서 고려)
