@@ -38,8 +38,14 @@ function moveCardPure(
   const destCandidates = [...state.actionCandidates[destinationActionId]];
   destCandidates.splice(destinationIndex, 0, candidateId);
 
+  const updatedCandidates = {
+    ...state.candidates,
+    [candidateId]: { ...state.candidates[candidateId], currentActionId: destinationActionId },
+  };
+
   return {
     ...state,
+    candidates: updatedCandidates,
     actionCandidates: {
       ...state.actionCandidates,
       [sourceActionId]: sourceCandidates,
@@ -67,7 +73,12 @@ function moveCardsPure(
   destCandidates.splice(clampedIndex, 0, ...candidateIds);
   newActionCandidates[destActionId] = destCandidates;
 
-  return { ...state, actionCandidates: newActionCandidates };
+  const updatedCandidates = { ...state.candidates };
+  for (const id of candidateIds) {
+    updatedCandidates[id] = { ...updatedCandidates[id], currentActionId: destActionId };
+  }
+
+  return { ...state, candidates: updatedCandidates, actionCandidates: newActionCandidates };
 }
 
 export function useStageDetailBoard(initialState: StageDetailState) {

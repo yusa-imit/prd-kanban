@@ -4,6 +4,7 @@ import { extractClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/clo
 import { getReorderDestinationIndex } from "@atlaskit/pragmatic-drag-and-drop-hitbox/util/get-reorder-destination-index";
 import { reorder } from "@atlaskit/pragmatic-drag-and-drop/reorder";
 import type { BoardState, CandidateId, StageId } from "~/types/kanban";
+import { STAGE_ACTIONS } from "~/data/dummy-recruitment";
 import { useKanbanLog } from "./use-kanban-log";
 import { useKanbanSelectionStore } from "./use-kanban-selection";
 import { useBoardMutation } from "./use-board-mutation";
@@ -39,8 +40,16 @@ function moveCardPure(
   const destCandidates = [...state.stageCandidates[destinationStageId]];
   destCandidates.splice(destinationIndex, 0, candidateId);
 
+  const destActions = STAGE_ACTIONS[destinationStageId];
+  const newActionId = destActions?.[0]?.id;
+  const updatedCandidates = {
+    ...state.candidates,
+    [candidateId]: { ...state.candidates[candidateId], currentActionId: newActionId },
+  };
+
   return {
     ...state,
+    candidates: updatedCandidates,
     stageCandidates: {
       ...state.stageCandidates,
       [sourceStageId]: sourceCandidates,
@@ -67,7 +76,14 @@ function moveCardsPure(
   destCandidates.splice(clampedIndex, 0, ...candidateIds);
   newStageCandidates[destStageId] = destCandidates;
 
-  return { ...state, stageCandidates: newStageCandidates };
+  const destActions = STAGE_ACTIONS[destStageId];
+  const newActionId = destActions?.[0]?.id;
+  const updatedCandidates = { ...state.candidates };
+  for (const id of candidateIds) {
+    updatedCandidates[id] = { ...updatedCandidates[id], currentActionId: newActionId };
+  }
+
+  return { ...state, candidates: updatedCandidates, stageCandidates: newStageCandidates };
 }
 
 export function useKanbanBoard(initialState: BoardState) {

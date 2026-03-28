@@ -5,6 +5,7 @@ interface KanbanSelectionState {
   selectedIds: Set<CandidateId>;
   draggingCandidateId: CandidateId | null;
   toggle: (id: CandidateId) => void;
+  toggleAll: (ids: CandidateId[]) => void;
   clear: () => void;
   isSelected: (id: CandidateId) => boolean;
   setDraggingCandidateId: (id: CandidateId | null) => void;
@@ -21,6 +22,17 @@ export const useKanbanSelectionStore = create<KanbanSelectionState>((set, get) =
         next.delete(id);
       } else {
         next.add(id);
+      }
+      return { selectedIds: next };
+    }),
+  toggleAll: (ids) =>
+    set((state) => {
+      const next = new Set(state.selectedIds);
+      const allSelected = ids.length > 0 && ids.every((id) => next.has(id));
+      if (allSelected) {
+        for (const id of ids) next.delete(id);
+      } else {
+        for (const id of ids) next.add(id);
       }
       return { selectedIds: next };
     }),

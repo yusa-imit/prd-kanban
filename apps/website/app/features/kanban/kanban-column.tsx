@@ -62,7 +62,12 @@ export function KanbanColumn({
       ref={columnRef}
       className={`bg-muted/40 flex w-80 shrink-0 flex-col rounded-lg border transition-colors ${isDragOver ? "bg-muted/80 border-primary/30" : ""}`}
     >
-      <KanbanColumnHeader name={name} count={candidateIds.length} stageId={linkStageId} />
+      <KanbanColumnHeader
+        name={name}
+        count={candidateIds.length}
+        stageId={linkStageId}
+        candidateIds={candidateIds}
+      />
       <div ref={scrollRef} className="kanban-scroll flex-1 overflow-y-auto px-2 pb-2">
         <div className="relative w-full" style={{ height: virtualizer.getTotalSize() }}>
           {virtualizer.getVirtualItems().map((virtualItem) => {
